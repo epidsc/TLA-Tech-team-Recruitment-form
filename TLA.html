@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TLA Tech த Team 2026/2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14181C;
+    --panel:#1B2126;
+    --panel-raised:#212930;
+    --line:#323C42;
+    --line-strong:#465059;
+    --text:#EDEFEF;
+    --text-soft:#A9B2B8;
+    --text-faint:#6E787E;
+    --green:#4FD68C;
+    --green-deep:#2FA76B;
+    --green-tint:rgba(79,214,140,0.12);
+    --amber:#E8A33D;
+    --amber-tint:rgba(232,163,61,0.12);
+    --red:#E2645A;
+    --red-tint:rgba(226,100,90,0.12);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:34px 34px;
+    background-attachment:fixed;
+    background-position:center;
+  }
+  body::before{content:none;}
+  #app{max-width:700px;margin:0 auto;padding:36px 20px 90px;}
+  h1,h2{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-0.01em;margin:0;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  .header-panel{
+    background:var(--panel);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius);
+    padding:26px 26px 22px;
+    margin-bottom:18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .header-panel::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:repeating-linear-gradient(90deg, var(--green) 0 14px, var(--amber) 14px 28px, var(--red) 28px 42px, transparent 42px 46px);
+    opacity:0.85;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--green);margin:6px 0 10px;display:flex;align-items:center;gap:8px;
+  }
+  .led{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;}
+  .header-panel h1{font-size:26px;line-height:1.25;}
+  .header-panel .sub{font-size:14px;color:var(--text-soft);line-height:1.65;margin-top:14px;}
+  .header-panel .sub + .sub{margin-top:10px;}
+  .meta-strip{
+    display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--text-faint);
+  }
+  .meta-strip strong{color:var(--text-soft);font-weight:500;}
+  .req-note{font-size:12px;color:var(--red);margin:4px 0 22px;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin-bottom:14px;
+  }
+  .card .qlabel{font-size:14.5px;font-weight:500;margin-bottom:12px;line-height:1.5;}
+  .card .qhint{font-size:12px;color:var(--text-faint);margin:-8px 0 12px;line-height:1.55;}
+  .req-mark{color:var(--red);margin-left:3px;}
+
+  input[type=text], input[type=tel], textarea{
+    width:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);
+    background:var(--panel-raised);border:1px solid var(--line-strong);border-radius:8px;
+    padding:10px 12px;outline:none;
+  }
+  input::placeholder, textarea::placeholder{color:var(--text-faint);}
+  input:focus, textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-tint);}
+  textarea{resize:vertical;min-height:80px;}
+
+  .opt{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:6px;
+    background:var(--panel-raised);border:1px solid var(--line-strong);border-radius:8px;
+    cursor:pointer;font-size:13.5px;color:var(--text-soft);transition:border-color 0.12s, color 0.12s;
+  }
+  .opt:hover{border-color:var(--text-faint);}
+  .opt input{position:absolute;opacity:0;width:0;height:0;}
+  .opt .mark{
+    width:16px;height:16px;flex-shrink:0;border:1.5px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .opt .mark.round{border-radius:50%;}
+  .opt .mark.square{border-radius:4px;}
+  .opt .mark .dot{width:8px;height:8px;border-radius:50%;background:var(--green);opacity:0;}
+  .opt .mark .tick{opacity:0;color:var(--bg);font-size:11px;line-height:1;}
+  .opt.selected{border-color:var(--green);color:var(--text);background:var(--green-tint);}
+  .opt.selected .mark{border-color:var(--green);background:var(--green);}
+  .opt.selected .mark .dot{opacity:1;background:var(--bg);}
+  .opt.selected .mark .tick{opacity:1;}
+  .other-input{margin-top:8px;margin-left:2px;}
+
+  button{
+    font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;
+    border-radius:8px;padding:10px 18px;border:1px solid var(--line-strong);
+    background:var(--panel-raised);color:var(--text);
+  }
+  button:hover{border-color:var(--text-faint);}
+  button:active{transform:scale(0.98);}
+  button.primary{background:var(--green);color:#0B1210;border-color:var(--green-deep);font-weight:600;}
+  button.primary:hover{background:var(--green-deep);}
+  button:disabled{opacity:0.45;cursor:not-allowed;}
+  .submit-row{display:flex;justify-content:flex-end;margin-top:22px;}
+
+  .footer-link{
+    text-align:center;margin-top:34px;font-size:12px;color:var(--text-faint);
+  }
+  .footer-link span{cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+  .footer-link span:hover{color:var(--text-soft);}
+
+  .confirm-panel{
+    background:var(--panel);border:1px solid var(--green-deep);border-radius:var(--radius);
+    padding:34px 28px;text-align:center;
+  }
+  .confirm-panel .led{width:10px;height:10px;margin-bottom:14px;}
+  .confirm-panel h2{font-size:20px;margin-bottom:8px;}
+  .confirm-panel p{color:var(--text-soft);font-size:13.5px;line-height:1.6;}
+
+  .stat-strip{display:flex;gap:12px;margin-bottom:20px;}
+  .stat-box{
+    flex:1;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .stat-box .num{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:600;color:var(--green);}
+  .stat-box .lbl{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+
+  .bar-wrap{margin-bottom:12px;}
+  .bar-label{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;color:var(--text-soft);}
+  .bar-track{height:7px;background:var(--panel-raised);border-radius:5px;overflow:hidden;border:1px solid var(--line);}
+  .bar-fill{height:100%;background:var(--green);}
+  .answer-list{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow-y:auto;}
+  .answer-item{font-size:13px;padding:9px 11px;background:var(--panel-raised);border-radius:6px;border:1px solid var(--line);}
+  .answer-item .who{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);margin-bottom:3px;}
+
+  .table-wrap{overflow-x:auto;}
+  table{border-collapse:collapse;width:100%;font-size:12px;}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;white-space:nowrap;}
+  th{background:var(--panel-raised);color:var(--text-soft);font-weight:500;position:sticky;top:0;}
+  td{color:var(--text-soft);}
+
+  .lock-panel{background:var(--panel);border:1px solid var(--line-strong);border-radius:var(--radius);padding:30px 26px;text-align:center;}
+  .lock-panel input{max-width:220px;margin:14px auto 0;text-align:center;letter-spacing:0.1em;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--panel-raised);color:var(--text);padding:10px 18px;border-radius:8px;
+    font-size:13px;border:1px solid var(--line-strong);z-index:50;
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziX4GQ0Ab7i0DekeAJnpsODLisatRRamXORRrUzJE-9rbWM6B9SzN0frAjjDPyPmIAhQ/exec';
+const SHEET_VIEW_URL = 'https://docs.google.com/spreadsheets/d/1BIpE5D0hEw389NKs7CWS6UR43-babcsbnU18KtIa51M/edit?usp=sharing';
+const ADMIN_PASSCODE = 'techcrew2026';
+
+function esc(s){
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+function uid(prefix){
+  return prefix + '_' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
+}
+
+const QUESTIONS = [
+  {id:'name', type:'short', label:'Full Name', required:true},
+  {id:'index', type:'short', label:'Index Number', required:true},
+  {id:'contact', type:'short', label:'Contact Number', required:true},
+  {id:'faculty', type:'radio', label:'Faculty', required:true, options:[
+    'Faculty of Engineering','Faculty of Architecture','Faculty of Information Technology',
+    'Faculty of Business','Faculty of Medicine','NDT'
+  ]},
+  {id:'batch', type:'radio', label:'Batch', required:true, options:[
+    '22nd Batch','23rd Batch','24th Batch','25th Batch'
+  ]},
+  {id:'experience', type:'radio', label:'Which best describes your experience in tech-related work?', required:true, options:[
+    "Beginner – I'm new and eager to learn.",
+    'Intermediate – I have some experience and have worked on a few projects.',
+    'Experienced – I have solid experience and can work independently.'
+  ]},
+  {id:'areas', type:'checkbox', label:'Which of the following areas are you familiar with?', required:true, options:[
+    'Basic Electronics & Wiring',
+    'Microcontroller Programming (Arduino / ESP32)',
+    'Software Development',
+    'Mechanical CAD / 3D Design',
+    'Sound & Audio Systems',
+    'Stage Lighting',
+    'Live Streaming & Broadcasting',
+    'Technical or non-technical event coordination',
+    "I'm not sure yet, but I'm excited to learn."
+  ]},
+  {id:'tools', type:'checkbox', label:'Which software/tools are you familiar with?', required:false, hasOther:true, options:[
+    'Arduino IDE','Visual Studio Code','PlatformIO','SolidWorks','OBS Studio','vMix','EasyEDA / Altium / KiCad'
+  ]},
+  {id:'statement', type:'checkbox', label:'Which statement best describes you?', required:false, options:[
+    'I enjoy building and creating things.',
+    'I enjoy solving problems.',
+    'I enjoy learning new technologies and skills.',
+    'I enjoy working behind the scenes.',
+    'I enjoy organizing and coordinating people.',
+    'I enjoy leading teams.',
+    'I enjoy supporting others.',
+    "I'm still discovering what I enjoy most."
+  ]},
+  {id:'showcase', type:'paragraph', label:"Is there anything you've explored, built, organized, or learnt that you'd like us to know about?", required:false,
+    hint:"Optional. This could be: a programming project · an electronics or IoT project · a robot · a mechanical design · a school or university club activity · a DIY project · anything else that represents your effort and creativity."}
+];
+
+let state = {
+  view: 'fill',
+  answers: {},
+  otherText: {},
+  toast: null,
+};
+QUESTIONS.forEach(q => {
+  if(q.type === 'checkbox') state.answers[q.id] = [];
+  else state.answers[q.id] = '';
+});
+
+function showToast(msg){
+  state.toast = msg;
+  render();
+  setTimeout(()=>{ state.toast = null; render(); }, 2400);
+}
+
+async function saveResponse(){
+  if(SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
+    throw new Error('Script URL not configured');
+  }
+  const payload = JSON.parse(JSON.stringify(state.answers));
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  });
+  // mode:'no-cors' means we can't read the response, so we optimistically
+  // treat a completed fetch (no network error) as success.
+}
+
+function setShort(qid, val){ state.answers[qid] = val; }
+function toggleRadio(qid, val){ state.answers[qid] = val; render(); }
+function toggleCheckbox(qid, val){
+  const arr = state.answers[qid];
+  const i = arr.indexOf(val);
+  if(i >= 0) arr.splice(i,1); else arr.push(val);
+  render();
+}
+function toggleOther(qid){
+  const arr = state.answers[qid];
+  const i = arr.indexOf('__OTHER__');
+  if(i >= 0){ arr.splice(i,1); }
+  else { arr.push('__OTHER__'); }
+  render();
+}
+function setOtherText(qid, val){ state.otherText[qid] = val; }
+
+function validate(){
+  for(const q of QUESTIONS){
+    if(!q.required) continue;
+    const v = state.answers[q.id];
+    if(q.type === 'checkbox'){
+      if(!v || v.length === 0) return q.id;
+    }else{
+      if(!v || !String(v).trim()) return q.id;
+    }
+  }
+  return null;
+}
+
+async function handleSubmit(){
+  const missing = validate();
+  if(missing){
+    showToast('Please answer all required questions.');
+    const el = document.getElementById('qwrap-' + missing);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  QUESTIONS.forEach(q => {
+    if(q.hasOther && state.answers[q.id].includes('__OTHER__')){
+      const idx = state.answers[q.id].indexOf('__OTHER__');
+      const txt = (state.otherText[q.id] || '').trim();
+      state.answers[q.id][idx] = txt ? ('Other: ' + txt) : 'Other';
+    }
+  });
+  const btn = document.getElementById('submit-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Submitting…'; }
+  try{
+    await saveResponse();
+    state.view = 'thanks';
+    render();
+  }catch(e){
+    showToast("Couldn't submit — check your connection and try again.");
+    if(btn){ btn.disabled = false; btn.textContent = 'Submit'; }
+  }
+}
+
+function renderHeader(){
+  return `
+    <div class="header-panel">
+      <div class="eyebrow"><span class="led"></span>Recruitment · Open</div>
+      <h1>TLA Tech த Team 2026/2027</h1>
+      <p class="sub">Welcome to the TLA Tech த Team!</p>
+      <p class="sub">From developing innovative IoT systems and automation projects to managing professional audio, stage lighting, LED displays, live broadcasting, and seamless event operations, we work behind the scenes to transform ideas into unforgettable experiences.</p>
+      <p class="sub">Thank you for your interest in joining the Tech த Team! Please fill out the form below. Your responses will help us understand your skills, experience, and areas of interest.</p>
+      <div class="meta-strip">
+        <span><strong>Not shared</strong> — your email isn't collected by this form.</span>
+      </div>
+    </div>
+    <div class="req-note">* Indicates required question</div>
+  `;
+}
+
+function renderShort(q){
+  return `
+    <input id="fill-${q.id}" type="text" value="${esc(state.answers[q.id])}"
+      oninput="setShort('${q.id}', this.value)" placeholder="Your answer">
+  `;
+}
+function renderRadio(q){
+  return q.options.map(opt => {
+    const selected = state.answers[q.id] === opt;
+    return `
+      <label class="opt ${selected?'selected':''}" onclick="toggleRadio('${q.id}', '${esc(opt).replace(/'/g,"\\'")}')">
+        <span class="mark round"><span class="dot"></span></span>
+        <span>${esc(opt)}</span>
+      </label>
+    `;
+  }).join('');
+}
+function renderCheckbox(q){
+  let html = q.options.map(opt => {
+    const selected = state.answers[q.id].includes(opt);
+    return `
+      <label class="opt ${selected?'selected':''}" onclick="toggleCheckbox('${q.id}', '${esc(opt).replace(/'/g,"\\'")}')">
+        <span class="mark square"><span class="tick">✓</span></span>
+        <span>${esc(opt)}</span>
+      </label>
+    `;
+  }).join('');
+  if(q.hasOther){
+    const otherSelected = state.answers[q.id].includes('__OTHER__');
+    html += `
+      <label class="opt ${otherSelected?'selected':''}" onclick="toggleOther('${q.id}')">
+        <span class="mark square"><span class="tick">✓</span></span>
+        <span>Other</span>
+      </label>
+    `;
+    if(otherSelected){
+      html += `<input class="other-input" type="text" placeholder="Tell us which" value="${esc(state.otherText[q.id]||'')}" oninput="setOtherText('${q.id}', this.value)">`;
+    }
+  }
+  return html;
+}
+function renderParagraph(q){
+  return `<textarea id="fill-${q.id}" oninput="setShort('${q.id}', this.value)" placeholder="Your answer">${esc(state.answers[q.id])}</textarea>`;
+}
+
+function renderQuestion(q){
+  let control = '';
+  if(q.type === 'short') control = renderShort(q);
+  else if(q.type === 'radio') control = renderRadio(q);
+  else if(q.type === 'checkbox') control = renderCheckbox(q);
+  else if(q.type === 'paragraph') control = renderParagraph(q);
+  return `
+    <div class="card" id="qwrap-${q.id}">
+      <div class="qlabel">${esc(q.label)}${q.required ? '<span class="req-mark">*</span>' : ''}</div>
+      ${q.hint ? `<div class="qhint">${esc(q.hint)}</div>` : ''}
+      ${control}
+    </div>
+  `;
+}
+
+function renderFill(){
+  return `
+    ${renderHeader()}
+    ${QUESTIONS.map(renderQuestion).join('')}
+    <div class="submit-row">
+      <button class="primary" id="submit-btn" onclick="handleSubmit()">Submit</button>
+    </div>
+    <div class="footer-link"><span onclick="promptAdmin()">Team lead? View responses</span></div>
+  `;
+}
+
+function renderThanks(){
+  return `
+    <div class="confirm-panel">
+      <span class="led" style="display:inline-block;"></span>
+      <h2>Response recorded.</h2>
+      <p>Thanks for applying to the TLA Tech த Team, ${esc(state.answers.name || '')}. We'll be in touch.</p>
+      <div style="margin-top:20px;">
+        <button onclick="resetForm()">Submit another response</button>
+      </div>
+    </div>
+  `;
+}
+
+function resetForm(){
+  state.answers = {};
+  state.otherText = {};
+  QUESTIONS.forEach(q => {
+    if(q.type === 'checkbox') state.answers[q.id] = [];
+    else state.answers[q.id] = '';
+  });
+  state.view = 'fill';
+  render();
+}
+
+function renderLock(){
+  return `
+    ${renderTopLite()}
+    <div class="lock-panel">
+      <div class="eyebrow" style="justify-content:center;"><span class="led"></span>Restricted</div>
+      <h2 style="font-size:18px;">Enter the team passcode to view responses</h2>
+      <input id="admin-pass" type="text" placeholder="Passcode" onkeydown="if(event.key==='Enter') checkAdmin()">
+      <div style="margin-top:14px;"><button class="primary" onclick="checkAdmin()">Unlock</button></div>
+    </div>
+  `;
+}
+function renderTopLite(){
+  return `<div class="footer-link" style="margin-bottom:18px; margin-top:0;"><span onclick="state.view='fill'; render();">← Back to form</span></div>`;
+}
+function promptAdmin(){
+  state.view = 'lock';
+  render();
+}
+function checkAdmin(){
+  const val = (document.getElementById('admin-pass').value || '').trim();
+  if(val === ADMIN_PASSCODE){
+    state.view = 'admin';
+    render();
+  }else{
+    showToast('Incorrect passcode.');
+  }
+}
+
+function renderAdmin(){
+  const configured = SHEET_VIEW_URL.indexOf('PASTE_YOUR') !== 0;
+  return `
+    ${renderTopLite()}
+    <div class="lock-panel">
+      <div class="eyebrow" style="justify-content:center;"><span class="led"></span>Unlocked</div>
+      <h2 style="font-size:18px;">Every submission is saved as a row in your Google Sheet.</h2>
+      <p style="color:var(--text-soft); font-size:13px; margin-top:6px;">Open it to see all applicants, sort, filter, or export.</p>
+      <div style="margin-top:16px;">
+        ${configured
+          ? `<button class="primary" onclick="window.open('${SHEET_VIEW_URL}', '_blank')">Open Google Sheet</button>`
+          : `<p style="color:var(--red); font-size:12px;">Set SHEET_VIEW_URL near the top of the script to your Sheet's share link.</p>`}
+      </div>
+    </div>
+  `;
+}
+
+async function render(){
+  const app = document.getElementById('app');
+  let html = '';
+  if(state.view === 'fill') html = renderFill();
+  else if(state.view === 'thanks') html = renderThanks();
+  else if(state.view === 'lock') html = renderLock();
+  else if(state.view === 'admin') html = renderAdmin();
+  app.innerHTML = html + (state.toast ? `<div class="toast">${esc(state.toast)}</div>` : '');
+}
+
+render();
+</script>
+</body>
+</html>
